@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import cors from "cors";
 
 import uploadRoutes from "./routes/uploadRoutes";
+import chatRoutes from "./routes/chatRoutes";
 
 dotenv.config();
 
@@ -13,6 +14,7 @@ app.use(cors());
 app.use(express.json());
 
 app.use("/api/upload", uploadRoutes);
+app.use("/api/chat", chatRoutes);
 
 app.get("/", (req, res) => {
     res.json({
