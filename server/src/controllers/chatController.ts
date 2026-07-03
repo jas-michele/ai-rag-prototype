@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { askDocument } from "../services/aiService";
-import { getDocumentText } from "../services/documentStoe";
+import { getChunks } from "../services/documentStore";
 
 export const askQuestion = async (
     req: Request,
@@ -9,9 +9,19 @@ export const askQuestion = async (
     try {
         const { question } = req.body;
 
-        const document = getDocumentText();
+        const chunks = getChunks();
 
-        if (!document) {
+        // console.log("Chunks in memory:", chunks.length);
+        // console.log("First chunk:");
+        // console.log(chunks[0]);
+
+        const document = chunks.join("\n\n");
+
+        // console.log("Chunks:", chunks.length);
+        // console.log("Document length:", document.length);
+        // console.log("Document contains 'vacation':", document.toLowerCase().includes("vacation"));
+
+        if (chunks.length === 0) {
             return res.status(400).json({
                 success: false,
                 message: "Please upload a PDF first."

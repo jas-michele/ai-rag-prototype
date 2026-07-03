@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { extractPDFText } from "../services/pdfService";
-import { setDocumentText } from "../services/documentStoe";
+import { setChunks } from "../services/documentStore";
+import { chunkDocument } from "../services/chunkService";
 
 export const uploadPDF = async (
     req: Request,
@@ -15,8 +16,12 @@ export const uploadPDF = async (
         });
     }
     const text = await extractPDFText(req.file.path);
+    
+    const chunks = chunkDocument(text);
 
-    setDocumentText(text);
+    setChunks(chunks);
+
+    console.log(`Stored ${chunks.length} chunks. `)
 
     res.json({
         success: true,
