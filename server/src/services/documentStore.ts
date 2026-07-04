@@ -1,10 +1,16 @@
-let documetChunks: string[] = [];
+export interface DocumentChunk {
+    text: string;
+    embedding: number[];
+}
 
-export function setChunks(chunks: string[]): void { 
+
+let documetChunks: DocumentChunk[] = [];
+
+export function setChunks(chunks: DocumentChunk[]): void { 
     documetChunks = chunks;
 }
 
-export function getChunks(): string[] {
+export function getChunks(): DocumentChunk[] {
     return documetChunks;
 }
 

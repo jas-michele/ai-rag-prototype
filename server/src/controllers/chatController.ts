@@ -1,6 +1,8 @@
 import { Request, Response } from "express";
 import { askDocument } from "../services/aiService";
 import { getChunks } from "../services/documentStore";
+import { createEmbedding } from "../services/embeddingService";
+import { getTopChunks } from "../services/similarityService";
 
 export const askQuestion = async (
     req: Request,
@@ -11,16 +13,6 @@ export const askQuestion = async (
 
         const chunks = getChunks();
 
-        // console.log("Chunks in memory:", chunks.length);
-        // console.log("First chunk:");
-        // console.log(chunks[0]);
-
-        const document = chunks.join("\n\n");
-
-        // console.log("Chunks:", chunks.length);
-        // console.log("Document length:", document.length);
-        // console.log("Document contains 'vacation':", document.toLowerCase().includes("vacation"));
-
         if (chunks.length === 0) {
             return res.status(400).json({
                 success: false,
@@ -28,7 +20,13 @@ export const askQuestion = async (
             })
         }
 
-        const answer = await askDocument(document, question);
+        const questionEmbedding = await createEmbedding(question);
+
+        const topChunks = getTopChunks(questionEmbedding, chunks, 3);
+
+        const context = topChunks.map((chunk) => chunk.text).join("\n\n")
+
+        const answer = await askDocument(context, question);
 
         res.json({
             success: true,
